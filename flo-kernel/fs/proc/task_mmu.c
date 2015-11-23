@@ -315,15 +315,46 @@ static int
 print_phys_addr(struct seq_file *m, struct vm_area_struct *vma,
 	       unsigned long start, unsigned long end)
 {
-	unsigned long start_phys_addr;
+	unsigned long start_phys_addr = vir_to_phy(vma, start);
 	unsigned long end_phys_addr;
 	int len;
 
 	end = get_last_addr(vma, start, end);
 	start_phys_addr = vir_to_phy(vma, start);
-	end_phys_addr = vir_to_phy(vma, end);
+	if (start != end)
+		end_phys_addr = vir_to_phy(vma, end);
+	else
+		end_phys_addr = start_phys_addr;
 
 	seq_printf(m, "%08lx-%08lx %n", start_phys_addr, end_phys_addr, &len);
+	return len;
+}
+
+static int
+print_ref_nums(struct seq_file *m, struct vm_area_struct *vma,
+	       unsigned long start, unsigned long end)
+{
+	unsigned long i;
+	int len = 0;
+	struct page *page;
+	int num;
+
+	for (i = start; i < end; i += PAGE_SIZE) {
+		page = follow_page(vma, i, FOLL_GET);
+		if (page == NULL || IS_ERR(page)) {
+			seq_printf(m, "%c", '.');
+			len++;
+			continue;
+		}
+		lock_page(page);
+		num = page_count(page);
+		unlock_page(page);
+		if (num > 9)
+			seq_printf(m, "%c", 'x');
+		else
+			seq_printf(m, "%d", num);
+		len++;
+	}
 	return len;
 }
 
@@ -368,7 +399,8 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma, int is_pid)
 			MAJOR(dev), MINOR(dev), ino, &len);
 
 	if (vma->vm_mm != NULL) {
-		len += print_phys_addr(m, vma, start, end);	
+		len += print_phys_addr(m, vma, start, end);
+		len += print_ref_nums(m, vma, start, end);
 	}
 
 	/*

@@ -259,6 +259,74 @@ static int do_maps_open(struct inode *inode, struct file *file,
 	return ret;
 }
 
+static unsigned long
+vir_to_phy(struct vm_area_struct *vma, unsigned long address)
+{
+	pgd_t *pgd;
+	pud_t *pud;
+	pmd_t *pmd;
+	pte_t *ptep, pte;
+	spinlock_t *ptl;
+	struct mm_struct *mm = vma->vm_mm;
+	unsigned long physaddr = 0, pfn;
+
+	ptep = NULL;
+
+	pgd = pgd_offset(mm, address);
+	if (pgd_none(*pgd) || unlikely(pgd_bad(*pgd)))
+		goto out;
+
+	pud = pud_offset(pgd, address);
+	if (pud_none(*pud) || unlikely(pud_bad(*pud)))
+		goto out;
+
+	pmd = pmd_offset(pud, address);
+	if (pmd_none(*pmd) || unlikely(pmd_bad(*pmd)))
+		goto out;
+
+	ptep = pte_offset_map_lock(mm, pmd, address, &ptl);
+
+	pte = *ptep;
+	if (!pte_present(pte))
+		goto unlock;
+
+	pfn = pte_pfn(pte);
+	// fix it latter
+	physaddr = __pfn_to_phys(pfn);
+
+unlock:
+	pte_unmap_unlock(ptep, ptl);
+out:
+	return physaddr;
+}
+
+static unsigned long
+get_last_addr(struct vm_area_struct *vma,
+	      unsigned long start, unsigned long end)
+{
+
+	unsigned long i;
+
+	for (i = start; i < end; i += PAGE_SIZE);
+	return i - PAGE_SIZE;
+}
+
+static int
+print_phys_addr(struct seq_file *m, struct vm_area_struct *vma,
+	       unsigned long start, unsigned long end)
+{
+	unsigned long start_phys_addr;
+	unsigned long end_phys_addr;
+	int len;
+
+	end = get_last_addr(vma, start, end);
+	start_phys_addr = vir_to_phy(vma, start);
+	end_phys_addr = vir_to_phy(vma, end);
+
+	seq_printf(m, "%08lx-%08lx %n", start_phys_addr, end_phys_addr, &len);
+	return len;
+}
+
 static void
 show_map_vma(struct seq_file *m, struct vm_area_struct *vma, int is_pid)
 {
@@ -298,6 +366,10 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma, int is_pid)
 			flags & VM_MAYSHARE ? 's' : 'p',
 			pgoff,
 			MAJOR(dev), MINOR(dev), ino, &len);
+
+	if (vma->vm_mm != NULL) {
+		len += print_phys_addr(m, vma, start, end);	
+	}
 
 	/*
 	 * Print the dentry name for named mappings, and a

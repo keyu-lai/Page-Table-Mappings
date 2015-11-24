@@ -83,7 +83,7 @@ static int test_2(void)
 			i++;
 		}
 		
-		sleep(1);
+		usleep(1000);
 		print_maps();
 		munmap(p, PAGE_SIZE * PAGE_NO);
 		exit(0);
@@ -118,7 +118,7 @@ static int test_3(void)
 			i+=2;
 		}
 
-		sleep(1);
+		usleep(1000);
 		print_maps();
 		munmap(p, PAGE_SIZE * PAGE_NO);
 		exit(0);
@@ -192,7 +192,7 @@ static int test_5(void)
 			i+=1;
 		}
 
-		sleep(1);
+		usleep(1000);
 		print_maps();
 		exit(0);
 	}

@@ -36,15 +36,11 @@ static int test_1(void)
 {
 	int pid = 1;
 
-	printf("\n........START TEST CASE 1..........\n");
-	printf("Parent pid is %d\n", getpid());
-	print_maps();
 	pid = fork();
-
 	if (pid == 0) {
 		char *p;
 
-		printf("child pid is %d\n", getpid());
+		printf("\n........START TEST CASE 1..........\n");
 		p = (char *)mmap(0, PAGE_SIZE * PAGE_NO, PROT_READ,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 		printf("%p\n", p);
@@ -68,15 +64,11 @@ static int test_2(void)
 	int pid = 1;
 	int i = 0;
 
-	printf("\n........START TEST CASE 2..........\n");
-	printf("Parent pid is %d\n", getpid());
-	print_maps();
 	pid = fork();
-
 	if (pid == 0) {
 		char *p;
 
-		printf("child pid is %d\n", getpid());
+		printf("\n........START TEST CASE 2..........\n");
 		p = (char *)mmap(0, PAGE_SIZE * PAGE_NO, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 		if (p == NULL) {
@@ -106,13 +98,10 @@ static int test_3(void)
 	int i = 1;
 	char *p;
 
-	printf("\n........START TEST CASE 3..........\n");
-	printf("Parent pid is %d\n", getpid());
-	print_maps();
 	pid = fork();
 
 	if (pid == 0) {
-		printf("child pid is %d\n", getpid());
+		printf("\n........START TEST CASE 3..........\n");
 		p = (char *)mmap(0, PAGE_SIZE * PAGE_NO, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 		printf("%p\n", p);
@@ -144,8 +133,6 @@ static int test_4(void)
 	char *p;
 
 	printf("\n........START TEST CASE 4..........\n");
-	printf("Parent pid is %d\n", getpid());
-	print_maps();
 	pid = fork();
 	p = (char *)mmap(0, PAGE_SIZE * PAGE_NO, PROT_READ | PROT_WRITE,
 		MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
@@ -174,13 +161,10 @@ static int test_4(void)
 static int test_5(void)
 {
 	int pid = 1;
-	int i = PAGE_NO-1;
+	int i = PAGE_NO - 1;
 	char *p;
 
 	printf("\n........START TEST CASE 5..........\n");
-	printf("Parent pid is %d\n", getpid());
-	print_maps();
-
 	p = (char *)mmap(0, PAGE_SIZE * PAGE_NO, PROT_READ | PROT_WRITE,
 		MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 	if (p == NULL) {
@@ -197,7 +181,6 @@ static int test_5(void)
 
 	if (pid == 0) {
 		i = 0;
-		printf("child pid is %d\n", getpid());
 		while (i < PAGE_NO/2 - 1) {
 			p[i * PAGE_SIZE] = 'a';
 			i += 1;
@@ -222,12 +205,8 @@ static int test_6(void)
 	char *p;
 
 	printf("\n........START TEST CASE 6..........\n");
-	printf("Parent pid is %d\n", getpid());
-	print_maps();
 	pid = fork();
-
 	if (pid == 0) {
-		printf("child pid is %d\n", getpid());
 		p = (char *)mmap(0, PAGE_SIZE * MAX_PAGE, PROT_READ,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 		printf("%p\n", p);

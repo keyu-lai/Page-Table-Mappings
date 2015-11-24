@@ -34,8 +34,9 @@ static void pr_err(const char *msg)
 
 static int test_1(void)
 {
-	int pid = 1; 
-
+	int pid = 1;
+ 
+	printf("\n........START TEST CASE 1..........\n");
 	printf("Parent pid is %d\n",getpid());
 	print_maps();
 	pid = fork();
@@ -55,6 +56,7 @@ static int test_1(void)
 	}
 	
 	wait(0);
+	printf("........END TEST CASE 1..........\n");
 	return 0;
 }
 
@@ -63,6 +65,7 @@ static int test_2(void)
 	int pid = 1; 
 	int i = 0;
 
+	printf("\n........START TEST CASE 2..........\n");
 	printf("Parent pid is %d\n",getpid());
 	print_maps();
 	pid = fork();
@@ -80,13 +83,14 @@ static int test_2(void)
 			i++;
 		}
 		
-		print_maps();
+		sleep(1);
 		print_maps();
 		munmap(p, PAGE_SIZE * PAGE_NO);
 		exit(0);
 	}
 	
 	wait(0);
+	printf("........END TEST CASE 2..........\n");
 	return 0;
 }
 
@@ -95,6 +99,7 @@ static int test_3(void)
 	int pid = 1; 
 	int i = 1;
 
+	printf("\n........START TEST CASE 3..........\n");
 	printf("Parent pid is %d\n",getpid());
 	print_maps();
 	pid = fork();
@@ -112,14 +117,15 @@ static int test_3(void)
 			p[i * PAGE_SIZE] = 'a';
 			i+=2;
 		}
-		
-		print_maps();
+
+		sleep(1);
 		print_maps();
 		munmap(p, PAGE_SIZE * PAGE_NO);
 		exit(0);
 	}
 	
 	wait(0);
+	printf("........END TEST CASE 3..........\n");
 	return 0;
 }
 
@@ -128,6 +134,7 @@ static int test_4(void)
 	int pid = 1; 
 	int i = 0;
 
+	printf("\n........START TEST CASE 4..........\n");
 	printf("Parent pid is %d\n",getpid());
 	print_maps();
 	pid = fork();
@@ -149,7 +156,8 @@ static int test_4(void)
 	}
 	wait(0);
 	munmap(p, PAGE_SIZE * PAGE_NO);
-	
+	printf("\n........END TEST CASE 4..........\n");
+
 	return 0;
 }
 
@@ -158,9 +166,10 @@ static int test_5(void)
 	int pid = 1; 
 	int i = PAGE_NO-1;
 
+	printf("\n........START TEST CASE 5..........\n");
 	printf("Parent pid is %d\n",getpid());
 	print_maps();
-	pid = fork();
+
 	char* p = (char *)mmap(0, PAGE_SIZE * PAGE_NO, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 	if (p == NULL) {
 		printf("error: %s\n",strerror(errno));
@@ -171,6 +180,8 @@ static int test_5(void)
 		p[i * PAGE_SIZE] = 'a';
 		i--;
 	}
+	
+	pid = fork();
 
 	if (pid == 0) {
 		i = 0;
@@ -180,15 +191,16 @@ static int test_5(void)
 			p[i * PAGE_SIZE] = 'a';
 			i+=1;
 		}
-		
-		print_maps();
+
+		sleep(1);
 		print_maps();
 		exit(0);
 	}
 
 	wait(0);
 	munmap(p, PAGE_SIZE * PAGE_NO);
-
+	printf("........END TEST CASE 5..........\n");
+	
 	return 0;
 }
 
@@ -196,7 +208,8 @@ static int test_6(void)
 {
 	int pid = 1; 
 	int MAX_PAGE = 2000;
-	
+
+	printf("\n........START TEST CASE 6..........\n");
 	printf("Parent pid is %d\n",getpid());
 	print_maps();
 	pid = fork();
@@ -216,6 +229,7 @@ static int test_6(void)
 	}
 	
 	wait(0);
+	printf("........END TEST CASE 6..........\n");
 
 	return 0;
 }
@@ -228,6 +242,7 @@ static int test_7(void)
 	int MAX_NO = 2000;
 	char * p[MAX_ITER];
 	
+	printf("\n........START TEST CASE 7..........\n");
 	while (j < MAX_ITER - 1) {
 		i = 0;
 		p[j] = (char *)mmap(0, PAGE_SIZE * MAX_NO, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
@@ -240,8 +255,7 @@ static int test_7(void)
 			p[j][i] = 'a';
 			i++;
 		}
-		
-		printf("%d\n",j);
+
 		j++;
 	}
 	
@@ -250,7 +264,8 @@ static int test_7(void)
 		munmap(p[j], PAGE_SIZE * MAX_NO);
 		j++;
 	}
-	
+	printf("........END TEST CASE 7..........\n");
+
 	return 0;
 }
 
@@ -259,19 +274,12 @@ int main(int argc, char **argv)
 	/*
 	 * Change this main function as you see fit.
 	 */
-	printf("\n........TEST CASE 1..........\n");
 	test_1();
-	printf("\n........TEST CASE 2..........\n");
 	test_2();
-	printf("\n........TEST CASE 3..........\n");
 	test_3();
-	printf("\n........TEST CASE 4..........\n");
 	test_4();
-	printf("\n........TEST CASE 5..........\n");
 	test_5();
-	printf("\n........TEST CASE 6..........\n");
 	test_6();
-	printf("\n........TEST CASE 7..........\n");
 	test_7();
 	
 	return 0;

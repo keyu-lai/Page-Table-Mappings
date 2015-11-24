@@ -340,7 +340,7 @@ print_ref_nums(struct seq_file *m, struct vm_area_struct *vma,
 	int num;
 
 	for (i = start; i < end; i += PAGE_SIZE) {
-		page = follow_page(vma, i, FOLL_GET);
+		page = follow_page(vma, i, 0);
 		if (page == NULL || IS_ERR(page)) {
 			seq_printf(m, "%c", '.');
 			len++;

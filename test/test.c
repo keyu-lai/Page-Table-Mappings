@@ -13,6 +13,11 @@
 #include <sys/syscall.h>
 #include <errno.h>
 #include "err.h"
+#include <sys/types.h>
+#include <sys/wait.h>
+
+const int PAGE_NO = 10;
+const int PAGE_SIZE = 4096;
 
 static int print_maps(void);
 
@@ -28,6 +33,34 @@ static void pr_err(const char *msg)
 
 static int test_1(void)
 {
+	int pid = 1; 
+	int i = 0;
+
+	printf("Parent pid is %d\n",getpid());
+	print_maps();
+	pid = fork();
+
+	if (pid == 0) {
+		printf("child pid is %d\n",getpid());
+		char* p = (char *)mmap(0, PAGE_SIZE * PAGE_NO, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
+		printf("%p\n",p);
+		if (p == NULL) {
+			printf("error: %s\n",strerror(errno));
+			exit(1);
+		}
+		
+		
+		while (i < 5) {
+			p[i * PAGE_SIZE] = '0';
+			i++;
+		}
+		
+		print_maps();
+		printf("test\n");
+		munmap(p, PAGE_SIZE * PAGE_NO);
+		exit(0);
+	}
+
 	return 0;
 }
 
@@ -67,13 +100,14 @@ int main(int argc, char **argv)
 	 * Change this main function as you see fit.
 	 */
 	test_1();
-	print_maps();
 	test_2();
 	test_3();
 	test_4();
 	test_5();
 	test_6();
 	test_7();
+	
+	while (wait(0) > 0);
 	return 0;
 }
 

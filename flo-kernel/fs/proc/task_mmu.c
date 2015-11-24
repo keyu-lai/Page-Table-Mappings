@@ -291,7 +291,6 @@ vir_to_phy(struct vm_area_struct *vma, unsigned long address)
 		goto unlock;
 
 	pfn = pte_pfn(pte);
-	// fix it latter
 	physaddr = __pfn_to_phys(pfn);
 
 unlock:
@@ -307,7 +306,8 @@ get_last_addr(struct vm_area_struct *vma,
 
 	unsigned long i;
 
-	for (i = start; i < end; i += PAGE_SIZE);
+	for (i = start; i < end; i += PAGE_SIZE)
+		;
 	return i - PAGE_SIZE;
 }
 

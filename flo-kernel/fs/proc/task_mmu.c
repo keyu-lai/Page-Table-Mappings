@@ -358,6 +358,11 @@ print_ref_nums(struct seq_file *m, struct vm_area_struct *vma,
 	return len;
 }
 
+static bool is_huge(struct vm_area_struct *vma)
+{
+	return (vma->vm_flags & VM_HUGETLB) > 0;
+}
+
 static void
 show_map_vma(struct seq_file *m, struct vm_area_struct *vma, int is_pid)
 {
@@ -398,7 +403,7 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma, int is_pid)
 			pgoff,
 			MAJOR(dev), MINOR(dev), ino, &len);
 
-	if (vma->vm_mm != NULL) {
+	if (vma->vm_mm != NULL && !is_huge(vma)) {
 		len += print_phys_addr(m, vma, start, end);
 		len += print_ref_nums(m, vma, start, end);
 	}

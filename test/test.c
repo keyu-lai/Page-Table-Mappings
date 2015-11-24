@@ -130,12 +130,15 @@ static int test_4(void)
 {
 	int pid = 1;
 	int i = 0;
-	char *p;
+	char *p, *tmp;
 
 	printf("\n........START TEST CASE 4..........\n");
-	pid = fork();
-	p = (char *)mmap(0, PAGE_SIZE * PAGE_NO, PROT_READ | PROT_WRITE,
+
+	tmp = (char *)mmap(0, PAGE_SIZE , PROT_READ | PROT_WRITE,
+			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+	p = (char *)mmap(tmp + 1, PAGE_SIZE * PAGE_NO, PROT_READ | PROT_WRITE,
 		MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+	munmap(tmp, PAGE_SIZE );
 	if (p == NULL) {
 		printf("error: %s\n", strerror(errno));
 		exit(1);
@@ -146,8 +149,11 @@ static int test_4(void)
 		i++;
 	}
 
+	pid = fork();
+
 	if (pid == 0) {
 		printf("child pid is %d\n", getpid());
+		usleep(1000);
 		print_maps();
 		exit(0);
 	}
@@ -162,11 +168,15 @@ static int test_5(void)
 {
 	int pid = 1;
 	int i = PAGE_NO - 1;
-	char *p;
+	char *p,*tmp;
 
 	printf("\n........START TEST CASE 5..........\n");
-	p = (char *)mmap(0, PAGE_SIZE * PAGE_NO, PROT_READ | PROT_WRITE,
+	tmp = (char *)mmap(0, PAGE_SIZE , PROT_READ | PROT_WRITE,
+			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+	p = (char *)mmap(tmp + 1, PAGE_SIZE * PAGE_NO, PROT_READ | PROT_WRITE,
 		MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+	munmap(tmp, PAGE_SIZE );
+
 	if (p == NULL) {
 		printf("error: %s\n", strerror(errno));
 		exit(1);

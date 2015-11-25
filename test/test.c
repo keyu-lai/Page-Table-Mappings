@@ -40,7 +40,6 @@ static int test_1(void)
 	if (pid == 0) {
 		char *p;
 
-		printf("\n........START TEST CASE 1..........\n");
 		p = (char *)mmap(0, PAGE_SIZE * PAGE_NO, PROT_READ,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 
@@ -55,7 +54,6 @@ static int test_1(void)
 	}
 
 	wait(0);
-	printf("........END TEST CASE 1..........\n");
 	return 0;
 }
 
@@ -68,7 +66,6 @@ static int test_2(void)
 	if (pid == 0) {
 		char *p;
 
-		printf("\n........START TEST CASE 2..........\n");
 		p = (char *)mmap(0, PAGE_SIZE * PAGE_NO, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 		if (p == NULL) {
@@ -88,7 +85,6 @@ static int test_2(void)
 	}
 
 	wait(0);
-	printf("........END TEST CASE 2..........\n");
 	return 0;
 }
 
@@ -101,7 +97,6 @@ static int test_3(void)
 	pid = fork();
 
 	if (pid == 0) {
-		printf("\n........START TEST CASE 3..........\n");
 		p = (char *)mmap(0, PAGE_SIZE * PAGE_NO, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 
@@ -122,7 +117,6 @@ static int test_3(void)
 	}
 
 	wait(0);
-	printf("........END TEST CASE 3..........\n");
 	return 0;
 }
 
@@ -131,8 +125,6 @@ static int test_4(void)
 	int pid = 1;
 	int i = 0;
 	char *p, *tmp;
-
-	printf("\n........START TEST CASE 4..........\n");
 
 	tmp = (char *)mmap(0, PAGE_SIZE, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
@@ -158,7 +150,6 @@ static int test_4(void)
 	}
 	wait(0);
 	munmap(p, PAGE_SIZE * PAGE_NO);
-	printf("\n........END TEST CASE 4..........\n");
 
 	return 0;
 }
@@ -169,7 +160,6 @@ static int test_5(void)
 	int i = PAGE_NO - 1;
 	char *p, *tmp;
 
-	printf("\n........START TEST CASE 5..........\n");
 	tmp = (char *)mmap(0, PAGE_SIZE, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 	p = (char *)mmap(tmp + 1, PAGE_SIZE * PAGE_NO, PROT_READ | PROT_WRITE,
@@ -202,7 +192,6 @@ static int test_5(void)
 
 	wait(0);
 	munmap(p, PAGE_SIZE * PAGE_NO);
-	printf("........END TEST CASE 5..........\n");
 
 	return 0;
 }
@@ -213,7 +202,6 @@ static int test_6(void)
 	int MAX_PAGE = 2000;
 	char *p;
 
-	printf("\n........START TEST CASE 6..........\n");
 	pid = fork();
 	if (pid == 0) {
 		p = (char *)mmap(0, PAGE_SIZE * MAX_PAGE, PROT_READ,
@@ -230,7 +218,6 @@ static int test_6(void)
 	}
 
 	wait(0);
-	printf("........END TEST CASE 6..........\n");
 
 	return 0;
 }
@@ -243,7 +230,6 @@ static int test_7(void)
 	int MAX_NO = 2000;
 	char *p[MAX_ITER];
 
-	printf("\n........START TEST CASE 7..........\n");
 	while (j < MAX_ITER - 1) {
 		i = 0;
 		p[j] = (char *)mmap(0, PAGE_SIZE * MAX_NO,
@@ -267,20 +253,46 @@ static int test_7(void)
 		munmap(p[j], PAGE_SIZE * MAX_NO);
 		j++;
 	}
-	printf("........END TEST CASE 7..........\n");
 
 	return 0;
 }
 
 int main(int argc, char **argv)
 {
-	test_1();
-	test_2();
-	test_3();
-	test_4();
-	test_5();
-	test_6();
-	test_7();
+	int pattern = 0;
+
+	if (argc == 2) 
+		pattern = atoi(argv[1]);
+	else {
+		printf("error: must supply one numeric argument between 1 and 7\n");
+		return 1;
+	}
+	switch(pattern) {
+		case 1:
+			test_1();
+			break;
+		case 2:
+			test_2();
+			break;
+		case 3:
+			test_3();
+			break;
+		case 4:
+			test_4();
+			break;
+		case 5:
+			test_5();
+			break;
+		case 6:
+			test_6();
+			break;
+		case 7:
+			test_7();
+			break;
+		default:
+			printf("error: must supply one numeric argument between 1 and 7\n");
+			return 1;
+	}
 
 	return 0;
 }

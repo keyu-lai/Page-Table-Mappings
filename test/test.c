@@ -81,7 +81,7 @@ static int test_2(void)
 			i++;
 		}
 
-		usleep(1000);
+		sleep(1);
 		print_maps();
 		munmap(p, PAGE_SIZE * PAGE_NO);
 		exit(0);
@@ -115,7 +115,7 @@ static int test_3(void)
 			i += 2;
 		}
 
-		usleep(1000);
+		sleep(1);
 		print_maps();
 		munmap(p, PAGE_SIZE * PAGE_NO);
 		exit(0);
@@ -153,7 +153,7 @@ static int test_4(void)
 
 	if (pid == 0) {
 		printf("child pid is %d\n", getpid());
-		usleep(1000);
+		sleep(1);
 		print_maps();
 		exit(0);
 	}
@@ -196,7 +196,7 @@ static int test_5(void)
 			i += 1;
 		}
 
-		usleep(1000);
+		sleep(1);
 		print_maps();
 		exit(0);
 	}

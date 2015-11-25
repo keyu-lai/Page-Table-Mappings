@@ -340,14 +340,14 @@ print_ref_nums(struct seq_file *m, struct vm_area_struct *vma,
 	int num;
 
 	for (i = start; i < end; i += PAGE_SIZE) {
-		page = follow_page(vma, i, 0);
+		page = follow_page(vma, i, FOLL_GET);
 		if (page == NULL || IS_ERR(page)) {
 			seq_printf(m, "%c", '.');
 			len++;
 			continue;
 		}
 		lock_page(page);
-		num = page_count(page);
+		num = page_mapcount(page);
 		unlock_page(page);
 		if (num > 9)
 			seq_printf(m, "%c", 'x');
@@ -406,6 +406,11 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma, int is_pid)
 	if (vma->vm_mm != NULL && !is_huge(vma)) {
 		len += print_phys_addr(m, vma, start, end);
 		len += print_ref_nums(m, vma, start, end);
+	} else {
+		int tmp = 0;
+
+		seq_printf(m, "00000000-00000000%n", &tmp);
+		len += tmp;
 	}
 
 	/*

@@ -39,9 +39,13 @@ static int test_1(void)
 	pid = fork();
 	if (pid == 0) {
 		char *p;
+		char *tmp;
 
-		p = (char *)mmap(0, PAGE_SIZE * PAGE_NO, PROT_READ,
+		tmp = (char *)mmap(0, PAGE_SIZE, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+		p = (char *)mmap(tmp + PAGE_SIZE * 2, PAGE_SIZE * PAGE_NO,
+			PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+		munmap(tmp, PAGE_SIZE);
 
 		if (p == NULL) {
 			pr_errno("\n");
@@ -63,11 +67,17 @@ static int test_2(void)
 	int i = 0;
 
 	pid = fork();
+
 	if (pid == 0) {
 		char *p;
+		char *tmp;
 
-		p = (char *)mmap(0, PAGE_SIZE * PAGE_NO, PROT_READ | PROT_WRITE,
+		tmp = (char *)mmap(0, PAGE_SIZE, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+		p = (char *)mmap(tmp + PAGE_SIZE * 2, PAGE_SIZE * PAGE_NO,
+			PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS,
+			0, 0);
+		munmap(tmp, PAGE_SIZE);
 		if (p == NULL) {
 			pr_errno("\n");
 			exit(1);
@@ -78,7 +88,6 @@ static int test_2(void)
 			i++;
 		}
 
-		sleep(1);
 		print_maps();
 		munmap(p, PAGE_SIZE * PAGE_NO);
 		exit(0);
@@ -93,13 +102,17 @@ static int test_3(void)
 	int pid = 1;
 	int i = 1;
 	char *p;
+	char *tmp;
 
 	pid = fork();
 
 	if (pid == 0) {
-		p = (char *)mmap(0, PAGE_SIZE * PAGE_NO, PROT_READ | PROT_WRITE,
+		tmp = (char *)mmap(0, PAGE_SIZE, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
-
+		p = (char *)mmap(tmp + PAGE_SIZE * 2, PAGE_SIZE * PAGE_NO,
+			PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS,
+			0, 0);
+		munmap(tmp, PAGE_SIZE);
 		if (p == NULL) {
 			pr_errno("\n");
 			exit(1);
@@ -110,7 +123,6 @@ static int test_3(void)
 			i += 2;
 		}
 
-		sleep(1);
 		print_maps();
 		munmap(p, PAGE_SIZE * PAGE_NO);
 		exit(0);
@@ -128,8 +140,9 @@ static int test_4(void)
 
 	tmp = (char *)mmap(0, PAGE_SIZE, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
-	p = (char *)mmap(tmp + 1, PAGE_SIZE * PAGE_NO, PROT_READ | PROT_WRITE,
-		MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+	p = (char *)mmap(tmp + PAGE_SIZE * 2, PAGE_SIZE * PAGE_NO,
+		PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS,
+		0, 0);
 	munmap(tmp, PAGE_SIZE);
 	if (p == NULL) {
 		pr_errno("\n");
@@ -144,7 +157,6 @@ static int test_4(void)
 	pid = fork();
 
 	if (pid == 0) {
-		sleep(1);
 		print_maps();
 		exit(0);
 	}
@@ -162,8 +174,9 @@ static int test_5(void)
 
 	tmp = (char *)mmap(0, PAGE_SIZE, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
-	p = (char *)mmap(tmp + 1, PAGE_SIZE * PAGE_NO, PROT_READ | PROT_WRITE,
-		MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+	p = (char *)mmap(tmp + PAGE_SIZE * 2, PAGE_SIZE * PAGE_NO,
+		PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS,
+		0, 0);
 	munmap(tmp, PAGE_SIZE);
 
 	if (p == NULL) {
@@ -185,7 +198,6 @@ static int test_5(void)
 			i += 1;
 		}
 
-		sleep(1);
 		print_maps();
 		exit(0);
 	}
@@ -201,11 +213,15 @@ static int test_6(void)
 	int pid = 1;
 	int MAX_PAGE = 2000;
 	char *p;
+	char *tmp;
 
 	pid = fork();
 	if (pid == 0) {
-		p = (char *)mmap(0, PAGE_SIZE * MAX_PAGE, PROT_READ,
+		tmp = (char *)mmap(0, PAGE_SIZE, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+		p = (char *)mmap(tmp + PAGE_SIZE * 2, PAGE_SIZE * MAX_PAGE,
+			PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+		munmap(tmp, PAGE_SIZE);
 
 		if (p == NULL) {
 			pr_errno("\n");
@@ -261,37 +277,44 @@ int main(int argc, char **argv)
 {
 	int pattern = 0;
 
-	if (argc == 2) 
+	if (argc == 2)
 		pattern = atoi(argv[1]);
 	else {
-		printf("error: must supply one numeric argument between 1 and 7\n");
+		test_1();
+		test_2();
+		test_3();
+		test_4();
+		test_5();
+		test_6();
+		test_7();
 		return 1;
 	}
-	switch(pattern) {
-		case 1:
-			test_1();
-			break;
-		case 2:
-			test_2();
-			break;
-		case 3:
-			test_3();
-			break;
-		case 4:
-			test_4();
-			break;
-		case 5:
-			test_5();
-			break;
-		case 6:
-			test_6();
-			break;
-		case 7:
-			test_7();
-			break;
-		default:
-			printf("error: must supply one numeric argument between 1 and 7\n");
-			return 1;
+	switch (pattern) {
+	case 1:
+		test_1();
+		break;
+	case 2:
+		test_2();
+		break;
+	case 3:
+		test_3();
+		break;
+	case 4:
+		test_4();
+		break;
+	case 5:
+		test_5();
+		break;
+	case 6:
+		test_6();
+		break;
+	case 7:
+		test_7();
+		break;
+	default:
+		printf("error: must supply one numeric
+			argument between 1 and 7\n");
+		return 1;
 	}
 
 	return 0;

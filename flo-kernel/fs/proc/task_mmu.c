@@ -291,7 +291,7 @@ vir_to_phy(struct vm_area_struct *vma, unsigned long address)
 		goto unlock;
 
 	pfn = pte_pfn(pte);
-	physaddr = __pfn_to_phys(pfn);
+	physaddr = pfn << PAGE_SHIFT;
 
 unlock:
 	pte_unmap_unlock(ptep, ptl);

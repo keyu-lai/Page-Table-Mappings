@@ -43,9 +43,9 @@ static int test_1(void)
 		printf("\n........START TEST CASE 1..........\n");
 		p = (char *)mmap(0, PAGE_SIZE * PAGE_NO, PROT_READ,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
-		printf("%p\n", p);
+
 		if (p == NULL) {
-			printf("error: %s\n", strerror(errno));
+			pr_errno("\n");
 			exit(1);
 		}
 
@@ -72,7 +72,7 @@ static int test_2(void)
 		p = (char *)mmap(0, PAGE_SIZE * PAGE_NO, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 		if (p == NULL) {
-			printf("error: %s\n", strerror(errno));
+			pr_errno("\n");
 			exit(1);
 		}
 
@@ -104,9 +104,9 @@ static int test_3(void)
 		printf("\n........START TEST CASE 3..........\n");
 		p = (char *)mmap(0, PAGE_SIZE * PAGE_NO, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
-		printf("%p\n", p);
+
 		if (p == NULL) {
-			printf("error: %s\n", strerror(errno));
+			pr_errno("\n");
 			exit(1);
 		}
 
@@ -140,7 +140,7 @@ static int test_4(void)
 		MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 	munmap(tmp, PAGE_SIZE);
 	if (p == NULL) {
-		printf("error: %s\n", strerror(errno));
+		pr_errno("\n");
 		exit(1);
 	}
 
@@ -152,7 +152,6 @@ static int test_4(void)
 	pid = fork();
 
 	if (pid == 0) {
-		printf("child pid is %d\n", getpid());
 		sleep(1);
 		print_maps();
 		exit(0);
@@ -178,7 +177,7 @@ static int test_5(void)
 	munmap(tmp, PAGE_SIZE);
 
 	if (p == NULL) {
-		printf("error: %s\n", strerror(errno));
+		pr_errno("\n");
 		exit(1);
 	}
 
@@ -219,9 +218,9 @@ static int test_6(void)
 	if (pid == 0) {
 		p = (char *)mmap(0, PAGE_SIZE * MAX_PAGE, PROT_READ,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
-		printf("%p\n", p);
+
 		if (p == NULL) {
-			printf("error: %s\n", strerror(errno));
+			pr_errno("\n");
 			exit(1);
 		}
 
@@ -251,7 +250,7 @@ static int test_7(void)
 			PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 		if (p[j] == NULL) {
-			printf("error: %s\n", strerror(errno));
+			pr_errno("\n");
 			exit(1);
 		}
 

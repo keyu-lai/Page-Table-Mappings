@@ -134,7 +134,7 @@ static int test_4(void)
 
 	printf("\n........START TEST CASE 4..........\n");
 
-	tmp = (char *)mmap(0, PAGE_SIZE , PROT_READ | PROT_WRITE,
+	tmp = (char *)mmap(0, PAGE_SIZE, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 	p = (char *)mmap(tmp + 1, PAGE_SIZE * PAGE_NO, PROT_READ | PROT_WRITE,
 		MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
@@ -170,7 +170,7 @@ static int test_5(void)
 	char *p, *tmp;
 
 	printf("\n........START TEST CASE 5..........\n");
-	tmp = (char *)mmap(0, PAGE_SIZE , PROT_READ | PROT_WRITE,
+	tmp = (char *)mmap(0, PAGE_SIZE, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 	p = (char *)mmap(tmp + 1, PAGE_SIZE * PAGE_NO, PROT_READ | PROT_WRITE,
 		MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);

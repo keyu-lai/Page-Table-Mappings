@@ -312,8 +312,7 @@ int main(int argc, char **argv)
 		test_7();
 		break;
 	default:
-		printf("error: must supply one numeric
-			argument between 1 and 7\n");
+		printf("error: one argument between 1 and 7\n");
 		return 1;
 	}
 
